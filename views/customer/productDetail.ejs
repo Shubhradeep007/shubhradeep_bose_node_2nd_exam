@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+
+<div class="py-8 mb-12">
+  <!-- Breadcrumb -->
+  <nav class="flex text-sm text-slate-400 mb-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-5 py-2 w-max shadow-sm" aria-label="Breadcrumb">
+    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+      <li class="inline-flex items-center">
+        <a href="/" class="hover:text-indigo-400 flex items-center gap-1 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+          Home
+        </a>
+      </li>
+      <li>
+        <div class="flex items-center">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          <a href="/?category=<%= product.category ? product.category._id : '' %>" class="ml-1 hover:text-indigo-400 md:ml-2 transition-colors">
+            <%= product.category ? product.category.name : 'Unknown Category' %>
+          </a>
+        </div>
+      </li>
+      <li aria-current="page">
+        <div class="flex items-center">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          <span class="ml-1 text-white font-medium md:ml-2 line-clamp-1"><%= product.name %></span>
+        </div>
+      </li>
+    </ol>
+  </nav>
+
+  <div class="bg-white/5 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/10 overflow-hidden relative">
+    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none"></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-8 relative z-10">
+      
+      <!-- Product Image -->
+      <div class="bg-black/20 flex items-center justify-center p-8 border-b md:border-b-0 md:border-r border-white/10">
+        <% if (product.image) { %>
+          <img src="<%= product.image %>" alt="<%= product.name %>" class="w-full max-w-md rounded-2xl shadow-2xl border border-white/10 transform transition-transform duration-700 hover:scale-[1.02] hover:shadow-indigo-500/10">
+        <% } else { %>
+          <div class="w-full max-w-md aspect-square bg-white/5 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-slate-500 shadow-xl border border-dashed border-white/20 p-12">
+            <svg class="w-24 h-24 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <p class="text-lg font-medium text-white shadow-sm">No Image Available</p>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Product Info -->
+      <div class="p-8 md:py-12 md:pr-12 flex flex-col">
+        <span class="inline-block px-4 py-1.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 rounded-full text-sm font-semibold tracking-wider uppercase mb-5 w-min whitespace-nowrap shadow-sm">
+          <%= product.category ? product.category.name : 'Unknown Category' %>
+        </span>
+        
+        <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight drop-shadow-md"><%= product.name %></h1>
+        
+        <div class="prose prose-slate prose-invert max-w-none text-slate-300 mb-8 flex-grow">
+          <p class="text-lg leading-relaxed"><%= product.description %></p>
+        </div>
+
+        <div class="space-y-4 pt-8 border-t border-white/10">
+          <div class="flex items-center text-sm text-slate-400 gap-2 bg-black/20 px-4 py-2 rounded-xl border border-white/5 w-max">
+            <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Ref: <span class="font-mono text-slate-300"><%= product._id %></span>
+          </div>
+          
+          <button class="w-full md:w-auto mt-6 px-8 py-4 bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-100 font-bold rounded-2xl shadow-xl hover:shadow-indigo-500/20 transform transition-all active:scale-95 flex items-center justify-center gap-2 backdrop-blur-md">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+            Interested? Contact Us
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

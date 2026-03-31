@@ -1,0 +1,102 @@
+<%- include('../partials/header') %>
+
+<div class="mb-8 mt-6">
+  <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl text-white relative">
+    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent pointer-events-none"></div>
+    <div class="px-8 py-16 md:py-24 max-w-2xl relative z-10">
+      <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">Discover the Best Products</h1>
+      <p class="text-indigo-200 text-lg mb-8 max-w-xl">Shop our exclusive collection of high-quality products categorized for your convenience.</p>
+      
+      <!-- Search Bar -->
+      <form action="/" method="GET" class="relative max-w-lg group">
+        <input type="hidden" name="category" value="<%= selectedCategory %>">
+        <input type="text" name="search" value="<%= searchQuery %>" placeholder="Search by name or description..." 
+               class="w-full pl-6 pr-14 py-4 bg-black/20 backdrop-blur-md border border-white/10 rounded-full text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-400/50 focus:border-indigo-400/50 shadow-lg text-lg placeholder-slate-500 transition-all">
+        <button type="submit" class="absolute right-2 top-2 bottom-2 bg-indigo-500/20 hover:bg-indigo-500/40 border border-indigo-500/30 text-indigo-100 rounded-full w-12 flex items-center justify-center transition-all backdrop-blur-md group-focus-within:bg-indigo-500/40">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="flex flex-col md:flex-row gap-8 mb-12">
+  <!-- Sidebar Filters -->
+  <aside class="w-full md:w-64 flex-shrink-0">
+    <div class="bg-white/5 backdrop-blur-xl p-6 rounded-2xl shadow-2xl border border-white/10 sticky top-24">
+      <h2 class="font-bold text-lg text-white mb-4 pb-2 border-b border-white/10">Categories</h2>
+      <ul class="space-y-2">
+        <li>
+          <a href="/?search=<%= encodeURIComponent(searchQuery) %>" 
+             class="block px-3 py-2 rounded-xl transition-all shadow-sm <%= !selectedCategory ? 'bg-indigo-500/20 text-indigo-200 border border-indigo-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10' %>">
+            All Products
+          </a>
+        </li>
+        <% categories.forEach(cat => { %>
+          <li>
+            <a href="/?category=<%= cat._id %>&search=<%= encodeURIComponent(searchQuery) %>" 
+               class="block px-3 py-2 rounded-xl transition-all shadow-sm <%= selectedCategory === cat._id.toString() ? 'bg-indigo-500/20 text-indigo-200 border border-indigo-500/30' : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10' %>">
+              <%= cat.name %>
+            </a>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Product Grid -->
+  <div class="flex-grow">
+    <% if (searchQuery) { %>
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-white">Showing results for "<span class="text-indigo-400"><%= searchQuery %></span>"</h2>
+        <a href="/" class="text-sm text-indigo-400 font-medium hover:text-indigo-300 transition-colors bg-white/5 px-3 py-1.5 rounded-full border border-white/10">Clear Search</a>
+      </div>
+    <% } %>
+
+    <% if (products && products.length > 0) { %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% products.forEach(product => { %>
+          <div class="bg-white/5 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 overflow-hidden hover:shadow-indigo-500/10 hover:border-white/20 transition-all group flex flex-col">
+            <a href="/product/<%= product.slug %>" class="relative aspect-square bg-black/30 overflow-hidden block">
+              <% if (product.image) { %>
+                <img src="<%= product.image %>" alt="<%= product.name %>" class="w-full h-full object-cover group-hover:scale-105 group-hover:opacity-90 transition-all duration-500">
+              <% } else { %>
+                <div class="w-full h-full flex flex-col items-center justify-center text-slate-500 p-6">
+                  <svg class="w-12 h-12 mb-2 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                  <span class="text-sm">No Image</span>
+                </div>
+              <% } %>
+            </a>
+            <div class="p-5 flex flex-col flex-grow relative z-10">
+              <span class="text-xs font-semibold text-indigo-400 tracking-wider uppercase mb-1 drop-shadow-sm">
+                <%= product.category ? product.category.name : 'Uncategorized' %>
+              </span>
+              <a href="/product/<%= product.slug %>">
+                <h3 class="font-bold text-lg text-white mb-2 group-hover:text-indigo-300 transition-colors line-clamp-1"><%= product.name %></h3>
+              </a>
+              <p class="text-slate-400 text-sm line-clamp-2 mb-4 flex-grow"><%= product.description %></p>
+              
+              <a href="/product/<%= product.slug %>" class="mt-auto block w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-center font-medium py-2 rounded-xl transition-all shadow-lg backdrop-blur-sm">
+                View Details
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="bg-white/5 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 p-12 text-center h-full flex flex-col items-center justify-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+        <svg class="w-16 h-16 text-slate-500 mb-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <h3 class="text-xl font-bold text-white mb-2 relative z-10">No Products Found</h3>
+        <p class="text-slate-400 max-w-md mx-auto relative z-10">We couldn't find any products matching your current filters. Try adjusting your search query or selecting a different category.</p>
+        <% if (searchQuery || selectedCategory) { %>
+          <a href="/" class="mt-6 inline-block bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-200 font-medium py-2.5 px-6 rounded-xl shadow-lg backdrop-blur-sm transition-all relative z-10">
+            Clear all filters
+          </a>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

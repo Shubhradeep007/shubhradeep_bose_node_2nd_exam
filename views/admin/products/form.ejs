@@ -1,0 +1,106 @@
+<%- include('../../partials/header') %>
+
+<div class="flex bg-white/5 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/10 min-h-[70vh] mb-12 mt-6 relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent pointer-events-none"></div>
+
+  <%- include('../../partials/admin-sidebar') %>
+  
+  <div class="flex-grow p-8 bg-black/10 rounded-r-3xl relative z-10 overflow-y-auto">
+    <div class="max-w-2xl mx-auto">
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-extrabold text-white tracking-tight"><%= title %></h1>
+        <a href="/admin/products" class="text-slate-400 hover:text-indigo-300 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+          Back to list
+        </a>
+      </div>
+
+      <div class="bg-white/5 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 p-8">
+        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+          <div class="mb-8 bg-rose-500/10 border border-rose-500/20 text-rose-400 p-5 rounded-xl flex items-start gap-3 shadow-lg" role="alert">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div class="flex flex-col gap-1">
+              <% errors.forEach(err => { %>
+                <span class="font-medium"><%= err %></span>
+              <% }) %>
+            </div>
+          </div>
+        <% } %>
+
+        <form action="<%= product ? `/admin/products/edit/${product._id}` : '/admin/products/add' %>" method="POST" enctype="multipart/form-data" class="space-y-6">
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="name" class="block text-sm font-semibold text-slate-300 mb-2">Product Name</label>
+              <input type="text" id="name" name="name" 
+                     value="<%= (typeof oldInput !== 'undefined' && oldInput.name) ? oldInput.name : (product ? product.name : '') %>" 
+                     required autofocus
+                     class="w-full px-5 py-3.5 bg-black/20 border border-white/10 rounded-xl focus:ring-1 focus:ring-indigo-400/50 focus:border-indigo-400/50 text-white outline-none transition-all placeholder-slate-500 shadow-inner">
+            </div>
+
+            <div>
+              <label for="category" class="block text-sm font-semibold text-slate-300 mb-2">Category</label>
+              <select id="category" name="category" required
+                      class="w-full px-5 py-3.5 bg-black/20 border border-white/10 rounded-xl focus:ring-1 focus:ring-indigo-400/50 focus:border-indigo-400/50 text-white outline-none transition-all shadow-inner appearance-none">
+                <option value="" class="bg-slate-900 text-slate-300">-- Select Category --</option>
+                <% categories.forEach(cat => { %>
+                  <% 
+                    let isSelected = false;
+                    if (typeof oldInput !== 'undefined' && oldInput.category) {
+                      isSelected = oldInput.category === cat._id.toString();
+                    } else if (product && product.category) {
+                      isSelected = product.category.toString() === cat._id.toString() || (product.category._id && product.category._id.toString() === cat._id.toString());
+                    }
+                  %>
+                  <option value="<%= cat._id %>" <%= isSelected ? 'selected' : '' %> class="bg-slate-900 text-white"><%= cat.name %></option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="description" class="block text-sm font-semibold text-slate-300 mb-2">Description</label>
+            <textarea id="description" name="description" rows="5" 
+                      class="w-full px-5 py-3.5 bg-black/20 border border-white/10 rounded-xl focus:ring-1 focus:ring-indigo-400/50 focus:border-indigo-400/50 text-white outline-none transition-all placeholder-slate-500 shadow-inner resize-y"><%= (typeof oldInput !== 'undefined' && oldInput.description) ? oldInput.description : (product ? product.description : '') %></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-slate-300 mb-3">Product Image</label>
+            
+            <% if (product && product.image) { %>
+              <div class="mb-5 flex items-start gap-5 p-5 border border-white/10 rounded-xl bg-white/5 backdrop-blur-sm relative">
+                <img src="<%= product.image %>" alt="Current Image" class="w-24 h-24 object-cover rounded-xl shadow-lg border border-white/10">
+                <div class="flex-grow">
+                  <p class="text-sm font-bold text-white mb-1">Current Image Active</p>
+                  <p class="text-xs text-slate-400 mb-3 leading-relaxed">Upload a new image below if you would like to override your existing product cover.</p>
+                  <input type="hidden" name="oldImage" value="<%= product.image %>">
+                </div>
+              </div>
+            <% } %>
+
+            <input type="file" id="image" name="image" accept="image/*"
+                   class="block w-full text-sm text-slate-400
+                   file:mr-5 file:py-3 file:px-6
+                   file:rounded-xl file:border border-white/10
+                   file:text-sm file:font-bold
+                   file:bg-black/30 file:text-indigo-300
+                   hover:file:bg-indigo-500/20 hover:file:border-indigo-500/30 hover:file:text-indigo-200 transition-all cursor-pointer">
+            <p class="text-xs text-slate-500 mt-3 font-medium flex items-center gap-1">
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              Accepted formats: JPG, PNG, WEBP. Max size 2MB.
+            </p>
+          </div>
+
+          <div class="flex justify-end pt-6 border-t border-white/10 mt-8">
+            <button type="submit" class="bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-100 font-bold flex items-center gap-2 py-3.5 px-8 rounded-xl shadow-lg hover:shadow-indigo-500/20 transition-all backdrop-blur-sm">
+              <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              <%= product ? 'Update Product' : 'Save Product' %>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>
